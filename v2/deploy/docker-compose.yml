@@ -1,0 +1,155 @@
+name: fogon
+
+# La app no publica puertos. Levanta una entrada explícita:
+#   docker compose --profile tunnel up -d   (Cloudflare Tunnel, recomendado)
+#   docker compose --profile edge up -d     (Caddy con IP pública)
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  # PostgreSQL interno para single-host/staging. Para producción con datos
+  # sensibles, usa PostgreSQL administrado con TLS y define DATABASE_URL.
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fogon}
+      POSTGRES_USER: ${POSTGRES_USER:-fogon}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en deploy/.env}
+    volumes:
+      # PostgreSQL 18 usa /var/lib/postgresql como raíz de datos.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks: [internal]
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+
+  migrate:
+    build:
+      context: ..
+      target: migrate
+    env_file: .env
+    environment:
+      DIDIT_WORKFLOW_API_KEY: ""
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    networks: [internal]
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    build:
+      context: ..
+      target: runner
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?Configura NEXT_PUBLIC_APP_URL en deploy/.env}
+        NEXT_PUBLIC_DEMO_MODE: "false"
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      TZ: America/Santiago
+      TRUST_PROXY: "1"
+      # La app no necesita la key de administración de workflows. Evita que
+      # un compromiso del runtime permita modificar la configuración de KYC.
+      DIDIT_WORKFLOW_API_KEY: ""
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - uploads:/app/public/uploads
+    init: true
+    restart: unless-stopped
+    networks: [edge, internal]
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Perfil "edge": Caddy publica 80/443 y Cloudflare entra por IP pública.
+  # Perfil "tunnel": cloudflared entra sin abrir puertos; no levantes Caddy.
+  caddy:
+    image: caddy:2.11-alpine
+    profiles: ["edge"]
+    # Non-root (docs/30, MEDIA-07): solo necesita NET_BIND_SERVICE para
+    # 80/443. Verificar que caddy_data/caddy_config sean escribibles por
+    # este uid en instalaciones existentes.
+    user: "1000:1000"
+    cap_add:
+      - NET_BIND_SERVICE
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?Configura DOMAIN en deploy/.env}
+      TLS_CERT: ${TLS_CERT:-/etc/caddy/certs/origin.pem}
+      TLS_KEY: ${TLS_KEY:-/etc/caddy/certs/origin.key}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/etc/caddy/certs:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge]
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+
+  cloudflared:
+    # Fijar una versión concreta o digest antes de producción
+    # (docs/30, BAJA-10): :latest permite drift de supply-chain silencioso.
+    image: cloudflare/cloudflared:latest
+    profiles: ["tunnel"]
+    # Non-root (docs/30, MEDIA-07): cloudflared solo hace tráfico saliente.
+    user: "65532:65532"
+    restart: unless-stopped
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      app:
+        condition: service_healthy
+    networks: [edge]
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:
+
+networks:
+  edge:
+  internal:
+    internal: true

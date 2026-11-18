@@ -1,0 +1,42 @@
+import type { Comuna } from "./types";
+
+export const SANTIAGO_COMUNAS: Comuna[] = [
+  { name: "Santiago", lat: -33.4489, lng: -70.6693, zone: "Centro" },
+  { name: "Cerrillos", lat: -33.5, lng: -70.7167, zone: "Poniente" },
+  { name: "Cerro Navia", lat: -33.4167, lng: -70.7333, zone: "Poniente" },
+  { name: "Conchalí", lat: -33.3833, lng: -70.6667, zone: "Norte" },
+  { name: "El Bosque", lat: -33.55, lng: -70.6667, zone: "Sur" },
+  { name: "Estación Central", lat: -33.45, lng: -70.7, zone: "Centro" },
+  { name: "Huechuraba", lat: -33.3667, lng: -70.6333, zone: "Norte" },
+  { name: "Independencia", lat: -33.4167, lng: -70.6667, zone: "Norte" },
+  { name: "La Cisterna", lat: -33.5333, lng: -70.6667, zone: "Sur" },
+  { name: "La Florida", lat: -33.5167, lng: -70.5833, zone: "Sur" },
+  { name: "La Granja", lat: -33.5333, lng: -70.6167, zone: "Sur" },
+  { name: "La Pintana", lat: -33.5833, lng: -70.6333, zone: "Sur" },
+  { name: "La Reina", lat: -33.45, lng: -70.5667, zone: "Oriente" },
+  { name: "Las Condes", lat: -33.4167, lng: -70.5833, zone: "Oriente" },
+  { name: "Lo Barnechea", lat: -33.35, lng: -70.5167, zone: "Oriente" },
+  { name: "Lo Espejo", lat: -33.5167, lng: -70.6833, zone: "Sur" },
+  { name: "Lo Prado", lat: -33.45, lng: -70.7333, zone: "Poniente" },
+  { name: "Macul", lat: -33.4833, lng: -70.6, zone: "Sur" },
+  { name: "Maipú", lat: -33.5167, lng: -70.7667, zone: "Poniente" },
+  { name: "Ñuñoa", lat: -33.4569, lng: -70.5975, zone: "Oriente" },
+  { name: "Pedro Aguirre Cerda", lat: -33.4833, lng: -70.6667, zone: "Sur" },
+  { name: "Peñalolén", lat: -33.4833, lng: -70.5333, zone: "Oriente" },
+  { name: "Providencia", lat: -33.4311, lng: -70.6092, zone: "Oriente" },
+  { name: "Pudahuel", lat: -33.4333, lng: -70.7667, zone: "Poniente" },
+  { name: "Quilicura", lat: -33.3667, lng: -70.7333, zone: "Norte" },
+  { name: "Quinta Normal", lat: -33.4333, lng: -70.7, zone: "Poniente" },
+  { name: "Recoleta", lat: -33.4167, lng: -70.6333, zone: "Norte" },
+  { name: "Renca", lat: -33.4, lng: -70.7167, zone: "Poniente" },
+  { name: "San Joaquín", lat: -33.5, lng: -70.6167, zone: "Sur" },
+  { name: "San Miguel", lat: -33.5, lng: -70.65, zone: "Sur" },
+  { name: "San Ramón", lat: -33.5333, lng: -70.6333, zone: "Sur" },
+  { name: "Vitacura", lat: -33.3833, lng: -70.5667, zone: "Oriente" },
+  { name: "Puente Alto", lat: -33.6167, lng: -70.5833, zone: "Sur" },
+  { name: "San Bernardo", lat: -33.5833, lng: -70.7, zone: "Sur" },
+];
+
+export const COMUNA_BY_NAME = new Map(
+  SANTIAGO_COMUNAS.map((comuna) => [comuna.name, comuna]),
+);

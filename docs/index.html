@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fogón · jmadasme</title>
+<meta name="description" content="Fogón V1 y V2: Next.js, TypeScript, Prisma, app móvil Expo y pagos online. Un repositorio, dos etapas y la historia de lo que cambió."/>
+<meta property="og:title" content="Fogón · jmadasme"/>
+<meta property="og:description" content="Fogón V1 y V2: Next.js, TypeScript, Prisma, app móvil Expo y pagos online. Un repositorio, dos etapas y la historia de lo que cambió."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="assets/og.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/community.css?v=1"/>
+<style>
+:root{
+  --bg:#06141b; --panel:#0b222b; --panel2:#0e2b35; --line:rgba(230,240,243,.12);
+  --text:#e6f0f3; --muted:#9db4bd; --accent:#2A9D8F; --accent2:#457B9D;
+  --warn:#E9C46A; --danger:#E76F51; --ok:#57CC99;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Space Grotesk",Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  --max:1120px; --radius:18px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;
+  background-image:radial-gradient(ellipse at 12% -10%,rgba(42,157,143,.18),transparent 42%),
+  radial-gradient(ellipse at 100% 0%,rgba(69,123,157,.16),transparent 38%),
+  linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:auto,auto,64px 64px,64px 64px;background-attachment:fixed}
+a{color:var(--accent);text-decoration:none} a:hover{color:#7fe0d2}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(6,20,27,.82);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:var(--max);margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:22px;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700;letter-spacing:-.02em}
+.brand-mark{width:30px;height:30px;border:1px solid rgba(42,157,143,.55);border-radius:9px;display:grid;place-items:center;background:rgba(42,157,143,.10)}
+.brand-mark svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:1.7}
+.brand small{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400;letter-spacing:.08em}
+.nav-links{display:flex;align-items:center;gap:18px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.nav-links a{color:var(--muted)} .nav-links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:11px;padding:10px 16px;font-weight:600;font-size:14px;color:var(--text);background:rgba(255,255,255,.03)}
+.btn:hover{border-color:rgba(42,157,143,.55);color:var(--text)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#1f7f76);border-color:transparent;color:#041114}
+.btn-primary:hover{filter:brightness(1.08);color:#041114}
+.btn-ghost{background:transparent}
+.hero{padding:76px 0 46px;position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:38px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+h1{font-size:clamp(38px,5.2vw,68px);line-height:1.02;letter-spacing:-.045em;margin:0 0 18px;
+  background:linear-gradient(120deg,#fff 10%,#bde9e3 55%,#7fb9d6 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(17px,1.5vw,21px);color:#c3d6dc;max-width:62ch;margin:0 0 22px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 22px}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--muted);background:rgba(255,255,255,.02)}
+.visual{position:relative}
+.visual img{width:100%;border-radius:var(--radius);border:1px solid var(--line);box-shadow:0 28px 70px rgba(0,0,0,.45);display:block}
+.visual:after{content:"";position:absolute;inset:auto -10% -16% 18%;height:60%;background:radial-gradient(ellipse,rgba(42,157,143,.20),transparent 68%);filter:blur(30px);z-index:-1}
+.stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(11,34,43,.55)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:22px 0}
+.stat{padding:4px 24px;border-right:1px solid var(--line)} .stat:last-child{border-right:0}
+.stat-num{font-size:27px;font-weight:700;letter-spacing:-.03em} .stat-label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.section{padding:76px 0;border-bottom:1px solid var(--line)}
+.section.tight{padding:56px 0}
+.section-head{max-width:760px;margin-bottom:30px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+h2{font-size:clamp(28px,3.4vw,43px);line-height:1.08;letter-spacing:-.035em;margin:0 0 12px}
+.section-sub{color:var(--muted);font-size:17px;margin:0}
+.rich p{color:#c3d6dc;margin:0 0 16px;font-size:16.5px}
+.callout{border-left:3px solid var(--accent);background:rgba(42,157,143,.07);padding:14px 18px;border-radius:0 12px 12px 0;color:#cfe6e2;margin:20px 0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:linear-gradient(180deg,rgba(14,43,53,.86),rgba(11,34,43,.86));border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{margin:0 0 8px;font-size:18px;letter-spacing:-.02em}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.card .num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.12em;display:block;margin-bottom:10px}
+.steps{counter-reset:s;display:grid;gap:12px}
+.step{display:grid;grid-template-columns:46px 1fr;gap:14px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(11,34,43,.55)}
+.step:before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--mono);color:var(--accent);font-size:13px;padding-top:3px}
+.step h3{margin:0 0 4px;font-size:16px} .step p{margin:0;color:var(--muted);font-size:14.5px}
+.flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;margin:22px 0}
+.node{flex:1 1 150px;min-width:140px;border:1px solid var(--line);border-radius:14px;padding:14px;background:rgba(14,43,53,.7);position:relative}
+.node b{display:block;font-size:14px;margin-bottom:4px} .node span{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.arrow{align-self:center;color:var(--accent);font-size:20px;font-family:var(--mono)}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.gallery figure{margin:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.gallery img{width:100%;display:block;border-bottom:1px solid var(--line)}
+.gallery figcaption{padding:10px 14px;font-size:13px;color:var(--muted)}
+.gallery .wide{grid-column:1/-1}
+.stack{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 22px}
+.chip{font-family:var(--mono);font-size:11.5px;border:1px solid rgba(42,157,143,.35);border-radius:999px;padding:6px 11px;color:#bfe6df;background:rgba(42,157,143,.07)}
+.doctable{width:100%;border-collapse:collapse;font-size:14.5px}
+.doctable th,.doctable td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.doctable th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.doctable td:first-child{color:var(--text);font-weight:600}
+.limits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.limit{border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(231,111,81,.045)}
+.limit b{display:block;margin-bottom:5px;color:#f2b8a8} .limit span{color:var(--muted);font-size:14px}
+.cta{padding:70px 0;background:linear-gradient(120deg,rgba(42,157,143,.12),rgba(69,123,157,.10));border-top:1px solid var(--line)}
+.cta .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.cta h2{margin:0 0 6px} .cta p{margin:0;color:var(--muted)}
+.footer{padding:28px 0;color:var(--muted);font-size:13px}
+.footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+code{font-family:var(--mono);font-size:.92em;background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px}
+pre{font-family:var(--mono);font-size:13px;background:#041016;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;color:#bfe6df}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.visual{order:-1}.grid3{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat{padding:12px 18px}}
+@media (max-width:680px){.nav-links{display:none}.grid2,.gallery,.limits{grid-template-columns:1fr}.section{padding:54px 0}h1{font-size:42px}.stats-grid{grid-template-columns:1fr 1fr}.cta .wrap{display:block}.cta .btn{margin-top:16px}}
+</style>
+<link href="rec/player.css?v=1" rel="stylesheet"/>
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <a class="brand" href="/"><span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></svg></span><span>Fogón<small>Software &amp; IA · jmadasme</small></span></a>
+  <nav class="nav-links" aria-label="Navegación">
+    <a href="#problema">Problema</a><a href="#como">Cómo funciona</a><a href="#arquitectura">Arquitectura</a>
+    <a href="#capturas">Capturas</a><a href="#stack">Stack</a><a href="#video">Video</a>
+<a href="#docs">Documentación</a><a href="#comunidad">Comunidad</a>
+    <a class="btn btn-ghost" href="https://github.com/jmadasme/fogon" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</div></header>
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow">Software &amp; IA · pedidos y reparto</div>
+    <h1>Dos versiones, un mismo oficio: dar de comer.</h1>
+    <p class="lead">Una plataforma completa de pedidos, reparto y liquidación para locales de Santiago: cliente, comercio, repartidor y administración en el mismo sistema.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://github.com/jmadasme/fogon" target="_blank" rel="noopener">Ver el repositorio</a>
+      <a class="btn" href="#docs">Leer documentación</a>
+    </div>
+    <div class="badges"><span class="badge">Next.js</span><span class="badge">TypeScript</span><span class="badge">Prisma</span><span class="badge">Expo</span><span class="badge">V1 + V2</span></div>
+  </div>
+  <div class="visual"><img src="assets/screenshots/01-home.webp" alt="Pantalla principal de Fogón con locales y platos"/></div>
+</div></section>
+<section class="stats"><div class="wrap stats-grid"><div class="stat"><div class="stat-num">4</div><div class="stat-label">roles</div></div>
+<div class="stat"><div class="stat-num">2</div><div class="stat-label">versiones</div></div>
+<div class="stat"><div class="stat-num">34</div><div class="stat-label">locales demo</div></div>
+<div class="stat"><div class="stat-num">170</div><div class="stat-label">platos</div></div></div></section>
+<section class="section" id="problema"><div class="wrap">
+  <div class="section-head"><div class="kicker">01 — El problema</div><h2>El pedido no termina cuando sale de cocina.</h2><p class="section-sub">Un sistema de reparto coordina cuatro agendas distintas y un pago que tiene que cuadrar al final del día.</p></div>
+  <div class="rich"><p>El cliente quiere ver el local, armar el carrito y saber cuándo llega. El comercio necesita aceptar, preparar y despachar. El repartidor necesita una ruta y una confirmación. Administración necesita comisiones, incidentes y auditoría.</p>
+<p>Fogón V1 resolvió el ciclo completo con Next.js, Prisma y una app móvil Expo: catálogo, checkout, máquina de estados del pedido, asignación de repartidor, seguimiento y liquidación. La V2 agregó pagos Flow, deshabilitó el efectivo y sumó auditorías, multi-modelo y hardening.</p>
+<p>Este repositorio conserva las dos versiones en carpetas separadas para que la evolución sea legible: no se borró la V1, se puso en contexto.</p><div class="callout">Las capturas y los datos son de demostración. Las credenciales reales de pago viven en variables de entorno y no se publican.</div></div>
+</div></section>
+<section class="section" id="como"><div class="wrap">
+  <div class="section-head"><div class="kicker">02 — Cómo funciona</div><h2>Del menú al reparto, con estados claros.</h2><p class="section-sub">Cada rol ve solo lo que necesita y cada transición deja rastro.</p></div>
+  <div class="steps"><div class="step"><div><h3>Catálogo</h3><p>Locales, categorías, platos, precios y disponibilidad. Los datos seed permiten probar sin depender de un comercio real.</p></div></div>
+<div class="step"><div><h3>Checkout</h3><p>Carrito, dirección, propina y método de pago. La V2 usa Flow online; la V1 acepta Mercado Pago, Transbank y efectivo.</p></div></div>
+<div class="step"><div><h3>Máquina de estados</h3><p>El pedido pasa por creado, aceptado, en preparación, listo, asignado, en camino, entregado o cancelado.</p></div></div>
+<div class="step"><div><h3>Reparto</h3><p>El repartidor recibe una asignación, confirma retiro y entrega. El cliente ve el estado y el mapa.</p></div></div>
+<div class="step"><div><h3>Liquidación</h3><p>Comisiones por rol, propinas y cierre. Administración audita cada movimiento.</p></div></div></div>
+</div></section>
+<section class="section" id="arquitectura"><div class="wrap">
+  <div class="section-head"><div class="kicker">03 — Arquitectura</div><h2>Una app, cuatro experiencias.</h2><p class="section-sub">Next.js concentra la lógica y la API; Expo lleva la operación a terreno; Prisma ordena la persistencia.</p></div>
+  <div class="flow"><div class="node"><b>Cliente</b><span>web</span></div><div class="arrow">→</div><div class="node"><b>Next.js</b><span>API + UI</span></div><div class="arrow">→</div><div class="node"><b>Prisma</b><span>PostgreSQL</span></div><div class="arrow">→</div><div class="node"><b>Repartidor</b><span>Expo</span></div><div class="arrow">→</div><div class="node"><b>Pagos</b><span>Flow / sandbox</span></div></div>
+  <div class="grid3"><div class="card"><span class="num">V1</span><h3>La base operativa</h3><p>Pedidos, reparto, roles, comisiones y pagos con Mercado Pago, Transbank y efectivo.</p></div>
+<div class="card"><span class="num">V2</span><h3>La capa de confianza</h3><p>Flow online, efectivo deshabilitado, auditorías, multi-modelo y hardening P0.</p></div>
+<div class="card"><span class="num">QA</span><h3>Pruebas en terreno</h3><p>Capturas de escritorio, mobile, QA nativo y e2e; build y lint documentados.</p></div></div>
+</div></section>
+<section class="section" id="capturas"><div class="wrap">
+  <div class="section-head"><div class="kicker">04 — Capturas</div><h2>El producto, pantalla por pantalla.</h2><p class="section-sub">Ocho vistas del recorrido completo: cliente, local, checkout, pedido, comercio, reparto y administración.</p></div>
+  <div class="gallery"><figure class="wide"><img src="assets/screenshots/01-home.webp" alt="Home de Fogón" loading="lazy"><figcaption>Home: locales, categorías y platos destacados.</figcaption></figure>
+<figure class=""><img src="assets/screenshots/02-store.webp" alt="Página de local" loading="lazy"><figcaption>Local: menú, disponibilidad y carrito.</figcaption></figure>
+<figure class=""><img src="assets/screenshots/03-checkout.webp" alt="Checkout" loading="lazy"><figcaption>Checkout: dirección, pago y propina.</figcaption></figure>
+<figure class=""><img src="assets/screenshots/04-order.webp" alt="Seguimiento del pedido" loading="lazy"><figcaption>Pedido: estado y seguimiento.</figcaption></figure>
+<figure class=""><img src="assets/screenshots/05-merchant.webp" alt="Panel del comercio" loading="lazy"><figcaption>Comercio: pedidos entrantes y preparación.</figcaption></figure>
+<figure class=""><img src="assets/screenshots/06-courier.webp" alt="Vista del repartidor" loading="lazy"><figcaption>Repartidor: asignación y entrega.</figcaption></figure>
+<figure class=""><img src="assets/screenshots/07-admin.webp" alt="Panel de administración" loading="lazy"><figcaption>Administración: comisiones y auditoría.</figcaption></figure>
+<figure class=""><img src="assets/screenshots/08-order-map.webp" alt="Mapa del pedido" loading="lazy"><figcaption>Mapa: seguimiento del reparto.</figcaption></figure></div>
+</div></section>
+<section class="section" id="stack"><div class="wrap">
+  <div class="section-head"><div class="kicker">05 — Stack</div><h2>Un stack para operar, no para lucirse.</h2><p class="section-sub">La misma base tecnológica en las dos versiones, con la V2 endurecida para pagos online.</p></div>
+  <div class="stack"><span class="chip">Next.js</span><span class="chip">TypeScript</span><span class="chip">Prisma</span><span class="chip">PostgreSQL</span><span class="chip">Expo</span><span class="chip">Docker</span><span class="chip">Caddy</span><span class="chip">Flow</span></div>
+  <div class="rich"><p>La app web y la API viven en Next.js. Prisma modela usuarios, locales, platos, pedidos, pagos y auditorías sobre PostgreSQL. La app móvil usa Expo para el repartidor. El despliegue documentado usa Docker, Caddy y Cloudflare; las credenciales se inyectan por entorno.</p></div>
+</div></section>
+
+<section class="section tight rec-section" id="video" style="--accent:#2E7DFF;--accent2:#14F195">
+<div class="wrap">
+<div class="rec-kicker">REC · VIDEO · 3:54</div>
+<h2 class="rec-h2">Fogón · pedidos y reparto, de V1 a V2</h2>
+<p class="rec-lead">Recorrido por el código real de Fogón: el modelo de cuatro roles, el pedido como registro contable, comisiones, reparto y la evolución de V1 a V2 con Flow, efectivo cerrado y hardening.</p>
+<div class="rec-banner">
+<span class="rec-banner-icon">📋</span>
+<strong>Puedes copiar y pegar los comandos del video desde el video !!!</strong>
+<span>Pausá, seleccioná el texto de la terminal y copiá.</span>
+</div>
+<div class="rec-shell">
+<div class="rec-bar"><i></i><i></i><i></i><span class="rec-title">Fogón · pedidos y reparto, de V1 a V2 · asciinema</span><span class="rec-rec"><b></b>REC</span></div>
+<div class="rec-screen-wrap">
+<div class="rec-screen" id="rec-screen"></div>
+<div class="rec-poster" id="rec-poster">
+<div class="rec-kicker">ASCIINEMA · 3:54</div>
+<h3>Fogón · pedidos y reparto, de V1 a V2</h3>
+<p>Recorrido por el código real de Fogón: el modelo de cuatro roles, el pedido como registro contable, comisiones, reparto y la evolución de V1 a V2 con Flow, efectivo cerrado y hardening.</p>
+<div class="rec-poster-meta">fogon · código real</div>
+<button class="rec-btn rec-primary" id="rec-start" type="button">▶ Reproducir</button>
+</div>
+</div>
+<div class="rec-controls">
+<button class="rec-btn rec-primary" id="rec-play" type="button">▶ Reproducir</button>
+<button class="rec-btn" id="rec-restart" type="button">↺ Reiniciar</button>
+<input class="rec-progress" id="rec-range" type="range" min="0" max="1000" value="0" aria-label="Progreso"/>
+<span class="rec-time" id="rec-time">0:00 / 3:54</span>
+<select class="rec-speed" id="rec-speed" aria-label="Velocidad"><option value="1">1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+<button class="rec-btn" id="rec-full" type="button" title="Pantalla completa">⛶</button>
+<button class="rec-btn" id="rec-copy" type="button">⧉ Copiar comandos</button>
+<a class="rec-download" href="rec/fogon.cast" download>descargar .cast</a>
+</div>
+</div>
+<p class="rec-note">Los fragmentos son código real de v1/ y v2/; se omitieron datos de clientes, direcciones, correos, teléfonos y credenciales.</p>
+<div class="rec-chapters"><span class="rec-chip"><b>0:06</b> EL PROBLEMA</span><span class="rec-chip"><b>0:20</b> ARQUITECTURA</span><span class="rec-chip"><b>0:35</b> EL NÚCLEO</span><span class="rec-chip"><b>0:53</b> COMISIONES</span><span class="rec-chip"><b>1:10</b> MÁQUINA DE ESTADOS</span><span class="rec-chip"><b>1:29</b> PEDIDOS</span><span class="rec-chip"><b>1:45</b> CHECKOUT V1</span><span class="rec-chip"><b>2:02</b> CHECKOUT V2</span><span class="rec-chip"><b>2:17</b> SALTO A FLOW</span><span class="rec-chip"><b>2:35</b> REPARTO</span><span class="rec-chip"><b>2:51</b> PANEL COMERCIO</span><span class="rec-chip"><b>3:07</b> ADMIN</span><span class="rec-chip"><b>3:24</b> HARDENING</span></div>
+</div>
+</section>
+
+<section class="section" id="docs"><div class="wrap">
+  <div class="section-head"><div class="kicker">06 — Documentación</div><h2>Todo está escrito.</h2><p class="section-sub">Del arranque rápido a las decisiones de ingeniería: qué hace, cómo se opera y dónde están los límites.</p></div>
+  <table class="doctable"><thead><tr><th>Documento</th><th>Qué encontrarás</th><th></th></tr></thead><tbody><tr><td>README</td><td>Visión, roles, arranque y estado del proyecto.</td><td><a href="../README.md">Abrir</a></td></tr>
+<tr><td>V1 README</td><td>La versión original, con su alcance y decisiones.</td><td><a href="../v1/README.md">Leer</a></td></tr>
+<tr><td>V2 README</td><td>Pagos Flow, auditorías y hardening.</td><td><a href="../v2/README.md">Leer</a></td></tr>
+<tr><td>Datasheet</td><td>Operación, roles y flujos.</td><td><a href="datasheet.md">Leer</a></td></tr>
+<tr><td>Developer</td><td>Modelo de datos, estados y despliegue.</td><td><a href="developer.md">Leer</a></td></tr></tbody></table>
+</div></section>
+<section class="section" id="limites"><div class="wrap">
+  <div class="section-head"><div class="kicker">07 — Límites y decisiones</div><h2>Lo que no promete.</h2><p class="section-sub">Un proyecto serio también se explica por lo que deja fuera.</p></div>
+  <div class="limits"><div class="limit"><b>Datos de demostración</b><span>Los 34 locales y 170 platos son seed. No representan comercios reales.</span></div>
+<div class="limit"><b>Pagos en sandbox</b><span>Flow y los demás medios se documentan con credenciales de prueba; no hay cobros reales en la demo.</span></div>
+<div class="limit"><b>App móvil</b><span>La app Expo requiere build propio y un dispositivo; no se distribuye como APK en el repo.</span></div>
+<div class="limit"><b>Dos versiones</b><span>V1 y V2 conviven para comparar. La versión recomendada para operar es V2.</span></div></div>
+  <details open style="margin-top:22px;border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(11,34,43,.55)"><summary style="cursor:pointer;font-weight:600">Preguntas típicas</summary><div style="margin-top:10px"><details><summary>¿Por qué dos carpetas?</summary><p>Porque la V2 cambia pagos y endurece la operación. Conservar la V1 permite entender la evolución.</p></details>
+<details><summary>¿Qué pago usa la V2?</summary><p>Flow online (Webpay, MACH, BCI) y efectivo deshabilitado. La V1 conserva Mercado Pago, Transbank y efectivo.</p></details>
+<details><summary>¿Se puede probar sin base de datos?</summary><p>Sí, con el seed de Prisma y las variables de entorno de ejemplo.</p></details>
+<details><summary>¿Las capturas son reales?</summary><p>Son capturas de la aplicación con datos demo; no exponen datos de clientes.</p></details></div></details>
+</div></section>
+<section class="cta"><div class="wrap"><div><h2>¿Lo probamos?</h2><p>El código, la documentación y las capturas están en el repositorio.</p></div><a class="btn btn-primary" href="https://github.com/jmadasme/fogon" target="_blank" rel="noopener">Abrir en GitHub</a></div></section>
+</main>
+<footer class="footer"><div class="wrap"><span>Fogón · Fogón</span><span>jmadasme · Software &amp; IA · <a href="/software/">volver al catálogo</a></span></div></footer>
+<script>window.PORTFOLIO_COMMUNITY={"account": "jmadasme", "repo": "fogon", "coinNamespace": "jmadasme-fogon-coins-v1", "faqs": [{"q": "¿Por qué dos carpetas?", "a": "Porque la V2 cambia pagos y endurece la operación. Conservar la V1 permite entender la evolución."}, {"q": "¿Qué pago usa la V2?", "a": "Flow online (Webpay, MACH, BCI) y efectivo deshabilitado. La V1 conserva Mercado Pago, Transbank y efectivo."}, {"q": "¿Se puede probar sin base de datos?", "a": "Sí, con el seed de Prisma y las variables de entorno de ejemplo."}, {"q": "¿Las capturas son reales?", "a": "Son capturas de la aplicación con datos demo; no exponen datos de clientes."}]};</script>
+<script defer src="assets/community.js?v=6"></script>
+<script defer src="rec/fogon.cast.js?v=1"></script>
+<script defer src="rec/player.js?v=1"></script>
+</body>
+</html>

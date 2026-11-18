@@ -1,0 +1,24 @@
+import { chromium } from "playwright";
+import fs from "node:fs";
+
+const BASE = "http://localhost:3000";
+const OUT = "/home/jma/Documents/Proyect/fogon/assets/screenshots/qa-native/round2";
+fs.mkdirSync(OUT, { recursive: true });
+const browser = await chromium.launch({ headless: true });
+const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, locale: "es-CL" });
+const page = await context.newPage();
+await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+await page.getByRole("button", { name: /Admin/i }).first().click();
+await page.getByRole("button", { name: "Ingresar", exact: true }).click();
+await page.waitForURL(/\/admin/, { timeout: 20000 });
+await page.goto(`${BASE}/admin/orders`, { waitUntil: "domcontentloaded" });
+await page.locator('input[name="q"]').fill("FOG-2HPUSQ");
+await page.getByRole("button", { name: "Filtrar" }).click();
+await page.waitForTimeout(1500);
+const row = page.locator("tr").filter({ hasText: "FOG-2HPUSQ" }).first();
+await row.waitFor({ timeout: 15000 });
+const text = await row.innerText();
+console.log(text.replace(/\n/g, " | "));
+console.log("delivered", text.includes("Entregado"), "paid", text.includes("Pagado"));
+await page.screenshot({ path: `${OUT}/06-admin-pedido.png`, fullPage: false });
+await browser.close();

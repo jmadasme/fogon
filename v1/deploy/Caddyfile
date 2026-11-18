@@ -1,0 +1,39 @@
+{
+	admin off
+}
+
+{$DOMAIN} {
+	# Certificado de origen de Cloudflare. Full (strict) exige que el origen
+	# presente un certificado válido y confiable para Cloudflare.
+	tls {$TLS_CERT} {$TLS_KEY}
+
+	encode zstd gzip
+	request_body {
+		max_size 8MB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	@noStore path /api/* /admin /admin/* /merchant /merchant/* /courier /courier/* /order/* /checkout /login /kyc /kyc/* /mfa /mfa/* /settings /settings/* /orders /register /registro/* /verify-email
+	header @noStore Cache-Control "no-store"
+
+	@hidden path /.git/* /.env* /prisma/* /deploy/* /backups/*
+	respond @hidden 404
+
+	reverse_proxy app:3000 {
+		health_uri /api/health
+		health_interval 30s
+		health_timeout 5s
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
